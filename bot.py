@@ -7,7 +7,7 @@ import urllib.parse
 # =========================================================
 
 BOT_TOKEN = "8881950718:AAFR0GeaLBBr3Rk1rGcULyyUz4KdyOyeWgI"
-POLLINATIONS_KEY = "sk_zuMRCdDnEXzdknIztmB6EiTyGJFPx2JP"
+POLLINATIONS_KEY = "sk_DW3FANu42JzHvSRUOknTvVSC8JHqsX6N"
 MODEL = "flux"
 
 
