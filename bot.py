@@ -1,21 +1,21 @@
 import telebot
 import requests
 import urllib.parse
+import time
 
 # =========================================================
-# تنظیمات - توکن‌ها رو مستقیم اینجا بذار
+# تنظیمات
 # =========================================================
 
-BOT_TOKEN = "8881950718:AAFR0GeaLBBr3Rk1rGcULyyUz4KdyOyeWgI"
-POLLINATIONS_KEY = "sk_DW3FANu42JzHvSRUOknTvVSC8JHqsX6N"
-MODEL = "flux"
+BOT_TOKEN = "توکن_ربات_خودت_رو_اینجا_بذار"
+MODEL = "flux"   # یا turbo / kontext
 
 
 # =========================================================
 # ربات
 # =========================================================
 
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot(8881950718:AAFR0GeaLBBr3Rk1rGcULyyUz4KdyOyeWgI)
 
 
 def translate_to_english(text):
@@ -52,24 +52,26 @@ def handle_prompt(message):
     msg = bot.reply_to(message, "⏳ در حال ساخت تصویر...")
 
     try:
+        # ترجمه به انگلیسی
         prompt_en = translate_to_english(prompt_fa)
         print(f"FA: {prompt_fa}")
         print(f"EN: {prompt_en}")
 
+        # endpoint رایگان (بدون کلید)
         encoded = urllib.parse.quote(prompt_en)
         url = (
-            f"https://gen.pollinations.ai/image/{encoded}"
+            f"https://image.pollinations.ai/prompt/{encoded}"
             f"?model={MODEL}&width=1024&height=1024&nologo=true"
         )
+        print(f"URL: {url}")
 
-        headers = {"Authorization": f"Bearer {POLLINATIONS_KEY}"}
-        r = requests.get(url, headers=headers, timeout=120)
-
+        r = requests.get(url, timeout=180)
         print(f"Status: {r.status_code}")
+        print(f"Content-Type: {r.headers.get('Content-Type')}")
 
-        if r.status_code == 401:
+        if r.status_code == 429:
             bot.edit_message_text(
-                "❌ کلید API نامعتبره.",
+                "⏳ درخواست‌ها زیاده. لطفاً ۱۵ ثانیه صبر کن و دوباره بفرست.",
                 chat_id=message.chat.id,
                 message_id=msg.message_id
             )
@@ -83,6 +85,15 @@ def handle_prompt(message):
             )
             return
 
+        if not r.headers.get("Content-Type", "").startswith("image"):
+            bot.edit_message_text(
+                f"❌ پاسخ سرور تصویر نیست:\n{r.text[:200]}",
+                chat_id=message.chat.id,
+                message_id=msg.message_id
+            )
+            return
+
+        # ارسال تصویر
         bot.delete_message(message.chat.id, msg.message_id)
         bot.send_photo(
             message.chat.id,
