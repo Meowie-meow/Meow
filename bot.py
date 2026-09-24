@@ -1,7 +1,8 @@
 import telebot
 import requests
 import urllib.parse
-import time
+import io
+from PIL import Image
 
 # =========================================================
 # تنظیمات
@@ -18,6 +19,10 @@ MODEL = "flux"   # یا turbo / kontext
 bot = telebot.TeleBot(BOT_TOKEN)
 
 
+# =========================================================
+# ترجمه فارسی به انگلیسی
+# =========================================================
+
 def translate_to_english(text):
     try:
         r = requests.get(
@@ -32,6 +37,34 @@ def translate_to_english(text):
         return text
 
 
+# =========================================================
+# حذف لوگو از عکس
+# =========================================================
+
+def remove_watermark(image_bytes, crop_percent=10):
+    """
+    حذف لوگو از عکس با کراپ کردن درصدی از پایین عکس.
+    crop_percent: چند درصد از پایین حذف بشه (پیش‌فرض ۱۰٪)
+    """
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    w, h = img.size
+
+    # محاسبه ارتفاع جدید (بالای عکس بمونه)
+    new_height = int(h * (100 - crop_percent) / 100)
+
+    # کراپ کردن عکس (چپ، بالا، راست، پایین)
+    cropped = img.crop((0, 0, w, new_height))
+
+    # تبدیل به بایت
+    out = io.BytesIO()
+    cropped.save(out, format="JPEG", quality=95)
+    return out.getvalue()
+
+
+# =========================================================
+# دستور start
+# =========================================================
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(
@@ -42,6 +75,10 @@ def send_welcome(message):
         "یک گربه روی رنگین‌کمان"
     )
 
+
+# =========================================================
+# دریافت پیام و ساخت تصویر
+# =========================================================
 
 @bot.message_handler(func=lambda m: True)
 def handle_prompt(message):
@@ -57,7 +94,7 @@ def handle_prompt(message):
         print(f"FA: {prompt_fa}")
         print(f"EN: {prompt_en}")
 
-        # endpoint رایگان (بدون کلید)
+        # ساخت URL - endpoint رایگان
         encoded = urllib.parse.quote(prompt_en)
         url = (
             f"https://image.pollinations.ai/prompt/{encoded}"
@@ -65,10 +102,12 @@ def handle_prompt(message):
         )
         print(f"URL: {url}")
 
+        # درخواست
         r = requests.get(url, timeout=180)
         print(f"Status: {r.status_code}")
         print(f"Content-Type: {r.headers.get('Content-Type')}")
 
+        # مدیریت خطاها
         if r.status_code == 429:
             bot.edit_message_text(
                 "⏳ درخواست‌ها زیاده. لطفاً ۱۵ ثانیه صبر کن و دوباره بفرست.",
@@ -93,11 +132,14 @@ def handle_prompt(message):
             )
             return
 
-        # ارسال تصویر
+        # حذف لوگو (کراپ ۱۰٪ از پایین عکس)
+        clean_image = remove_watermark(r.content, crop_percent=10)
+
+        # ارسال تصویر تمیز
         bot.delete_message(message.chat.id, msg.message_id)
         bot.send_photo(
             message.chat.id,
-            photo=r.content,
+            photo=clean_image,
             caption=f"🎨 {prompt_fa}"
         )
 
