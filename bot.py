@@ -7,7 +7,7 @@ import time
 # تنظیمات
 # =========================================================
 
-BOT_TOKEN = "توکن_ربات_خودت_رو_اینجا_بذار"
+BOT_TOKEN = "8881950718:AAFR0GeaLBBr3Rk1rGcULyyUz4KdyOyeWgI"
 MODEL = "flux"   # یا turbo / kontext
 
 
@@ -15,7 +15,7 @@ MODEL = "flux"   # یا turbo / kontext
 # ربات
 # =========================================================
 
-bot = telebot.TeleBot(8881950718:AAFR0GeaLBBr3Rk1rGcULyyUz4KdyOyeWgI)
+bot = telebot.TeleBot(BOT_TOKEN)
 
 
 def translate_to_english(text):
