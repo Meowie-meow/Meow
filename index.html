@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>ثبت‌نام میووی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Vazirmatn',system-ui,sans-serif}
+:root{
+  --pink:#F02B7A;
+  --pink-dark:#9A286C;
+  --blue:#3893CF;
+  --blue-dark:#2965AE;
+  --blue-light:#55A2D3;
+  --cream:#FCEFE1;
+  --cream-shadow:#DEC3BD;
+  --dark-purple:#100A21;
+  --black:#07020D;
+  --white:#FFFFFF;
+
+  --text:#100A21;
+  --text-muted:#7a6f80;
+  --border:#e5dcd9;
+  --error:#d93025;
+  --success:#0f9d58;
+  --radius:14px;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--cream);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ پس‌زمینه ============ */
+.bg-decoration{
+  position:fixed;inset:0;overflow:hidden;z-index:0;
+  background:linear-gradient(135deg,#FCEFE1 0%,#fbe3d0 50%,#FCEFE1 100%);
+}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);
+  animation:float 20s ease-in-out infinite;}
+.blob-1{width:520px;height:520px;background:var(--pink);top:-180px;right:-120px;opacity:.35}
+.blob-2{width:600px;height:600px;background:var(--blue);bottom:-220px;left:-160px;animation-delay:-7s;opacity:.35}
+.blob-3{width:420px;height:420px;background:var(--blue-light);top:40%;left:40%;animation-delay:-14s;opacity:.25}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(50px,-70px) scale(1.08)}
+  66%{transform:translate(-40px,60px) scale(.95)}
+}
+
+/* ============ TOP BAR ============ */
+.top-bar{
+  position:relative;z-index:10;height:64px;padding:0 32px;
+  display:flex;align-items:center;
+  background:rgba(252,239,225,.75);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(222,195,189,.4);
+}
+.brand{display:flex;align-items:center;gap:10px}
+
+.brand-logo{
+  width:44px;height:44px;
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--pink),var(--blue));
+  color:#fff;font-weight:800;font-size:1.15rem;
+  box-shadow:0 6px 16px rgba(240,43,122,.35);
+  flex-shrink:0;
+  position:relative;
+  cursor:pointer;
+  user-select:none;
+}
+.brand-logo img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+  pointer-events:none;
+}
+.brand-logo .fallback{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+.brand-name{font-weight:800;font-size:1.15rem;color:var(--dark-purple);letter-spacing:-.3px}
+
+/* ============ PAGE ============ */
+.page{
+  position:relative;z-index:5;
+  height:calc(100vh - 64px);
+  padding:24px;display:flex;align-items:center;justify-content:center;
+}
+.form-card{
+  width:100%;max-width:560px;
+  max-height:100%;
+  background:var(--white);border-radius:24px;
+  padding:40px 48px;
+  box-shadow:0 24px 60px rgba(16,10,33,.12), 0 4px 12px rgba(16,10,33,.05);
+  overflow-y:auto;
+  animation:fadeUp .5s ease;
+}
+.form-card::-webkit-scrollbar{width:6px}
+.form-card::-webkit-scrollbar-thumb{background:var(--cream-shadow);border-radius:3px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.form-header{margin-bottom:32px;text-align:center}
+.form-header h1{font-size:1.75rem;font-weight:800;margin-bottom:8px;color:var(--dark-purple)}
+.form-header p{color:var(--text-muted);font-size:.92rem}
+
+/* ============ Fields ============ */
+.gfield{position:relative;margin-bottom:22px}
+.gfield input,.gender-trigger{
+  width:100%;height:60px;padding:22px 16px 8px;
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  background:#fff;font-size:1rem;color:var(--dark-purple);
+  transition:all .2s ease;font-family:inherit;
+}
+.gfield input:focus{
+  outline:none;border-color:var(--pink);border-width:2px;
+  padding:21px 15px 7px;
+  box-shadow:0 0 0 4px rgba(240,43,122,.08);
+}
+.gfield label{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  color:var(--text-muted);font-size:1rem;pointer-events:none;
+  transition:all .18s ease;background:#fff;padding:0 4px;
+}
+.gfield input:focus + label,
+.gfield input:not(:placeholder-shown) + label{
+  top:0;font-size:.78rem;color:var(--pink);font-weight:600;
+}
+.gfield input:not(:placeholder-shown):not(:focus) + label{color:var(--text-muted)}
+.gfield .req{color:var(--pink);margin-right:2px}
+
+.gfield.error input,.gfield.error .gender-trigger{
+  border-color:var(--error)!important;
+  border-width:2px!important;
+}
+.gfield.error label{color:var(--error)!important}
+.error-msg{
+  display:none;
+  color:var(--error);
+  font-size:.8rem;
+  margin-top:6px;
+  padding-right:6px;
+  font-weight:600;
+}
+.gfield.error .error-msg{display:block}
+
+/* ============ Gender Trigger ============ */
+.gender-field{margin-bottom:26px}
+.gender-trigger{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:0 16px;user-select:none;
+}
+.gender-trigger:focus{outline:none}
+.gender-field.active .gender-trigger{
+  border-color:var(--pink);border-width:2px;
+  box-shadow:0 0 0 4px rgba(240,43,122,.08);
+}
+.gender-value{color:var(--text-muted);font-size:1rem;transition:all .2s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gender-value.filled{color:var(--dark-purple);font-weight:500}
+.gender-required{color:var(--pink);margin-right:auto;margin-left:8px;display:none}
+.gender-value:not(.filled) ~ .gender-required{display:inline}
+.dropdown-arrow{color:var(--text-muted);transition:transform .25s;flex-shrink:0}
+.gender-field.active .dropdown-arrow{transform:rotate(180deg);color:var(--pink)}
+
+/* ============ Submit ============ */
+.submit-btn{
+  width:100%;height:56px;border:none;border-radius:var(--radius);
+  background:linear-gradient(135deg,var(--pink) 0%,var(--pink-dark) 100%);
+  color:#fff;font-size:1.05rem;font-weight:700;font-family:inherit;
+  cursor:pointer;transition:all .25s ease;
+  box-shadow:0 10px 24px rgba(240,43,122,.35);
+  position:relative;overflow:hidden;margin-top:8px;
+}
+.submit-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);
+  opacity:0;transition:opacity .35s;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(56,147,207,.4)}
+.submit-btn:hover::before{opacity:1}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn .btn-text{position:relative;z-index:2}
+.submit-btn.loading .btn-text{opacity:0}
+.btn-loader{
+  display:none;position:absolute;inset:0;margin:auto;
+  width:22px;height:22px;border:3px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .8s linear infinite;z-index:2;
+}
+.submit-btn.loading .btn-loader{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============ Success ============ */
+.success-screen{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px 20px;
+  animation:fadeUp .5s ease;
+}
+.success-screen.show{display:flex}
+.success-icon{
+  width:96px;height:96px;border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;box-shadow:0 14px 36px rgba(240,43,122,.4);
+  animation:pop .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+.success-screen h2{font-size:1.5rem;margin-bottom:12px;color:var(--dark-purple)}
+.success-screen p{color:var(--text-muted);line-height:1.8;font-size:.95rem;max-width:380px}
+
+/* ============ Duplicate — کادر نئونی ============ */
+.duplicate-screen{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:44px 32px;
+  background:var(--white);
+  border-radius:20px;
+  position:relative;
+  animation:fadeUp .45s ease;
+  box-shadow:
+    0 0 12px rgba(240,43,122,.55),
+    0 0 24px rgba(240,43,122,.35),
+    0 0 48px rgba(56,147,207,.25),
+    inset 0 0 24px rgba(240,43,122,.06);
+  border:2px solid transparent;
+  background-image:
+    linear-gradient(var(--white), var(--white)),
+    linear-gradient(135deg, var(--pink), var(--blue) 50%, var(--pink));
+  background-origin:border-box;
+  background-clip:padding-box, border-box;
+  margin:20px 0;
+}
+.duplicate-screen.show{display:flex}
+.duplicate-icon{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,#ff6b6b,#d93025);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+  box-shadow:
+    0 8px 24px rgba(217,48,37,.4),
+    0 0 20px rgba(240,43,122,.5);
+  animation:pop .5s cubic-bezier(.34,1.56,.64,1);
+}
+.duplicate-screen h2{
+  font-size:1.35rem;
+  margin-bottom:10px;
+  color:var(--dark-purple);
+  font-weight:800;
+  text-shadow:0 0 12px rgba(240,43,122,.25);
+}
+.duplicate-screen p{
+  color:var(--text-muted);
+  line-height:1.8;
+  font-size:.92rem;
+  max-width:380px;
+  margin-bottom:14px;
+}
+.duplicate-screen .tg-id{
+  display:inline-block;
+  padding:8px 18px;
+  background:#fff0f6;
+  color:var(--pink);
+  border-radius:999px;
+  font-weight:800;
+  font-size:.95rem;
+  direction:ltr;
+  margin-bottom:22px;
+  border:1.5px solid rgba(240,43,122,.3);
+  box-shadow:
+    0 0 12px rgba(240,43,122,.35),
+    inset 0 0 8px rgba(240,43,122,.08);
+}
+.duplicate-screen .retry-btn{
+  padding:13px 30px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--pink),var(--pink-dark));
+  color:#fff;
+  font-family:inherit;
+  font-weight:700;
+  font-size:.95rem;
+  cursor:pointer;
+  transition:all .25s;
+  box-shadow:
+    0 8px 20px rgba(240,43,122,.4),
+    0 0 16px rgba(240,43,122,.35);
+}
+.duplicate-screen .retry-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 12px 26px rgba(240,43,122,.55),
+    0 0 28px rgba(56,147,207,.4);
+}
+
+/* ============ MODAL ============ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(16,10,33,.55);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+  z-index:100;padding:20px;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-sheet{
+  background:#fff;border-radius:24px;
+  width:100%;max-width:440px;
+  max-height:80vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 30px 70px rgba(16,10,33,.35);
+  transform:scale(.9) translateY(20px);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  overflow:hidden;
+}
+.modal-overlay.show .modal-sheet{transform:scale(1) translateY(0)}
+.modal-header{
+  padding:22px 24px 14px;
+  border-bottom:1px solid var(--cream-shadow);
+  flex-shrink:0;
+}
+.modal-title{font-size:1.15rem;font-weight:700;color:var(--dark-purple);text-align:center}
+.modal-subtitle{font-size:.85rem;color:var(--text-muted);
+  text-align:center;margin-top:4px;}
+.gender-options{
+  overflow-y:auto;
+  padding:14px 16px;
+  display:flex;flex-direction:column;gap:6px;
+  flex:1;
+}
+.gender-options::-webkit-scrollbar{width:6px}
+.gender-options::-webkit-scrollbar-thumb{background:var(--cream-shadow);border-radius:3px}
+.gender-option{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;
+  border:1.5px solid transparent;
+  border-radius:12px;
+  background:transparent;
+  cursor:pointer;transition:all .18s ease;
+  font-family:inherit;font-size:.98rem;
+  text-align:right;color:var(--dark-purple);
+  flex-shrink:0;
+}
+.gender-option:hover{background:var(--cream);border-color:var(--cream-shadow)}
+.gender-option.selected{
+  background:#fff0f6;
+  border-color:var(--pink);
+}
+.option-label{flex:1;font-weight:500}
+.option-check{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--border);position:relative;
+  transition:all .2s;flex-shrink:0;
+}
+.gender-option.selected .option-check{
+  border-color:var(--pink);
+  background:var(--pink);
+}
+.gender-option.selected .option-check::after{
+  content:'';position:absolute;top:50%;left:50%;
+  width:5px;height:9px;border:solid #fff;
+  border-width:0 2px 2px 0;
+  transform:translate(-50%,-60%) rotate(45deg);
+}
+.modal-footer{
+  padding:14px 16px 18px;
+  border-top:1px solid var(--cream-shadow);
+  display:flex;gap:12px;
+  flex-shrink:0;
+  background:#fdfaf6;
+}
+.modal-btn{
+  flex:1;height:48px;border:none;border-radius:12px;
+  font-family:inherit;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.modal-btn.cancel{background:var(--cream);color:var(--dark-purple)}
+.modal-btn.cancel:hover{background:#f5e1cf}
+.modal-btn.confirm{
+  background:linear-gradient(135deg,var(--pink),var(--pink-dark));
+  color:#fff;box-shadow:0 8px 20px rgba(240,43,122,.35);
+}
+.modal-btn.confirm:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px rgba(240,43,122,.45);
+}
+.modal-btn.confirm:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+
+/* ============ TOAST — کادر نئونی ============ */
+.toast{
+  position:fixed;
+  top:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(-140%);
+  min-width:320px;
+  max-width:90vw;
+  width:auto;
+  padding:18px 32px;
+  background:var(--white);
+  color:var(--dark-purple);
+  border-radius:14px;
+  font-size:1rem;
+  font-weight:700;
+  text-align:center;
+  line-height:1.5;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  z-index:300;
+  opacity:0;
+  pointer-events:none;
+  transition:transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+  border:2px solid transparent;
+  background-image:
+    linear-gradient(var(--white), var(--white)),
+    linear-gradient(135deg, var(--pink), var(--blue) 50%, var(--pink));
+  background-origin:border-box;
+  background-clip:padding-box, border-box;
+  box-shadow:
+    0 0 12px rgba(240,43,122,.55),
+    0 0 24px rgba(240,43,122,.35),
+    0 0 48px rgba(56,147,207,.3),
+    inset 0 0 16px rgba(240,43,122,.05);
+}
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+.toast.error{
+  background-image:
+    linear-gradient(var(--white), var(--white)),
+    linear-gradient(135deg, #ff6b6b, var(--pink) 50%, #ff6b6b);
+  box-shadow:
+    0 0 12px rgba(217,48,37,.6),
+    0 0 24px rgba(217,48,37,.4),
+    0 0 48px rgba(240,43,122,.3),
+    inset 0 0 16px rgba(217,48,37,.05);
+  color:var(--error);
+}
+.toast.success{
+  background-image:
+    linear-gradient(var(--white), var(--white)),
+    linear-gradient(135deg, var(--blue), var(--pink) 50%, var(--blue));
+  box-shadow:
+    0 0 12px rgba(56,147,207,.6),
+    0 0 24px rgba(56,147,207,.4),
+    0 0 48px rgba(240,43,122,.3),
+    inset 0 0 16px rgba(56,147,207,.05);
+  color:var(--blue-dark);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:600px){
+  html,body{overflow:auto}
+  .page{height:auto;padding:16px}
+  .form-card{padding:28px 22px;border-radius:20px;max-width:100%}
+  .form-header h1{font-size:1.4rem}
+  .top-bar{padding:0 16px;height:56px}
+  .brand-name{font-size:1rem}
+  .brand-logo{width:40px;height:40px;border-radius:10px}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-sheet{
+    border-radius:24px 24px 0 0;
+    max-width:100%;max-height:85vh;
+    transform:translateY(100%);
+  }
+  .modal-overlay.show .modal-sheet{transform:translateY(0)}
+  .duplicate-screen{padding:32px 20px}
+  .duplicate-screen h2{font-size:1.15rem}
+  .duplicate-icon{width:70px;height:70px}
+  .toast{
+    min-width:auto;
+    width:calc(100% - 32px);
+    max-width:calc(100% - 32px);
+    padding:16px 20px;
+    font-size:.9rem;
+    white-space:normal;
+    top:16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decoration">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<header class="top-bar">
+  <div class="brand">
+    <div class="brand-logo" id="brandLogo" title="">
+      <span class="fallback">M</span>
+      <img src="logo.png" alt="لوگوی میووی" onerror="this.style.display='none'">
+    </div>
+    <span class="brand-name">میووی</span>
+  </div>
+</header>
+
+<main class="page">
+  <div class="form-card">
+
+    <form id="lotteryForm" novalidate>
+
+      <div class="form-header">
+        <h1>ثبت‌نام</h1>
+        <p>اطلاعات خود را وارد کنید</p>
+      </div>
+
+      <div class="gfield" data-field="fullname">
+        <input type="text" id="fullname" placeholder=" " autocomplete="name">
+        <label for="fullname">نام و نام خانوادگی <span class="req">*</span></label>
+        <div class="error-msg">لطفاً نام خود را وارد کنید</div>
+      </div>
+
+      <div class="gfield" data-field="telegram">
+        <input type="text" id="telegram" placeholder=" " dir="ltr" autocomplete="off">
+        <label for="telegram">آیدی تلگرام <span class="req">*</span></label>
+        <div class="error-msg">لطفاً آیدی تلگرام خود را وارد کنید</div>
+      </div>
+
+      <div class="gfield" data-field="mivovi">
+        <input type="text" id="mivovi" placeholder=" " dir="ltr" autocomplete="off">
+        <label for="mivovi">شماره حساب میووی <span class="req">*</span></label>
+        <div class="error-msg">لطفاً شماره حساب میووی را وارد کنید</div>
+      </div>
+
+      <div class="gfield" data-field="phone">
+        <input type="tel" id="phone" placeholder=" " dir="ltr" autocomplete="tel">
+        <label for="phone">شماره تماس (اختیاری)</label>
+        <div class="error-msg">شماره تماس نامعتبر است</div>
+      </div>
+
+      <div class="gfield gender-field" data-field="gender" id="genderField">
+        <div class="gender-trigger" id="genderTrigger" tabindex="0" role="button">
+          <span class="gender-value" id="genderValue">جنسیت</span>
+          <span class="gender-required">*</span>
+          <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="error-msg">لطفاً جنسیت خود را انتخاب کنید</div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">ثبت‌نام</span>
+        <span class="btn-loader"></span>
+      </button>
+
+    </form>
+
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" width="48" height="48">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="white"/>
+        </svg>
+      </div>
+      <h2>ثبت‌نام شما با موفقیت انجام شد!</h2>
+      <p>اطلاعات شما دریافت شد.</p>
+    </div>
+
+    <div class="duplicate-screen" id="duplicateScreen">
+      <div class="duplicate-icon">
+        <svg viewBox="0 0 24 24" width="42" height="42">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="white"/>
+        </svg>
+      </div>
+      <h2>این آیدی قبلاً ثبت‌نام کرده است!</h2>
+      <p>هر آیدی تلگرام فقط یک بار می‌تواند در قرعه‌کشی شرکت کند.</p>
+      <span class="tg-id" id="dupTgId"></span>
+      <button type="button" class="retry-btn" id="retryBtn">بازگشت به فرم</button>
+    </div>
+  </div>
+</main>
+
+<!-- مودال جنسیت -->
+<div class="modal-overlay" id="genderModal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 class="modal-title">انتخاب جنسیت</h3>
+      <p class="modal-subtitle">یکی از گزینه‌های زیر را انتخاب کنید</p>
+    </div>
+    <div class="gender-options" id="genderOptions"></div>
+    <div class="modal-footer">
+      <button type="button" class="modal-btn cancel" id="genderCancel">انصراف</button>
+      <button type="button" class="modal-btn confirm" id="genderConfirm" disabled>تایید</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Supabase JS Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* =========================================================
+   Mivovi — Registration Form with Supabase
+   ========================================================= */
+
+/* 🔑 کلیدهای Supabase */
+const SUPABASE_URL = 'https://fkcxlykfhhgmmgpdpds.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_qdnN1c1zcamDp081DfZV4Q_Fo1nn8Gb';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* 📋 لیست جنسیت */
+const GENDER_LIST = [
+  "مذکر",
+  "مؤنث",
+  "دو جنسه",
+  "سه جنسه",
+  "چند جنسه",
+  "جنس چینی",
+  "جنس افغانی",
+  "جنس تزریقی",
+  "جنس دودی",
+  "جنس فروخته شده پس گرفته نخواهد شد",
+  "ترنس مرد",
+  "ترنس زن",
+  "ترنس برق",
+  "ترنس مهتابی",
+  "آدم فضایی",
+  "ربات",
+  "هوش مصنوعی",
+  "درخت",
+  "صیفیجات",
+  "سبزیجات",
+  "میوه جات",
+  "حیوانات",
+  "آهن آلات",
+  "ضایعات",
+  "خریداریم",
+  "سایر",
+  "ترجیح میدم نگویم"
+];
+
+/* ============ Elements ============ */
+const form            = document.getElementById('lotteryForm');
+const genderField     = document.getElementById('genderField');
+const genderTrigger   = document.getElementById('genderTrigger');
+const genderValueEl   = document.getElementById('genderValue');
+const genderModal     = document.getElementById('genderModal');
+const genderOptionsEl = document.getElementById('genderOptions');
+const genderConfirm   = document.getElementById('genderConfirm');
+const genderCancel    = document.getElementById('genderCancel');
+const successScreen   = document.getElementById('successScreen');
+const duplicateScreen = document.getElementById('duplicateScreen');
+const dupTgId         = document.getElementById('dupTgId');
+const retryBtn        = document.getElementById('retryBtn');
+const submitBtn       = document.getElementById('submitBtn');
+const toastEl         = document.getElementById('toast');
+
+let selectedGender = '';
+let tempGender     = '';
+
+/* ============ نرمال‌سازی آیدی ============ */
+function normalizeTgId(id) {
+  return String(id)
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '')
+    .replace(/^@/, '')
+    .replace(/\/$/, '');
+}
+
+/* ============ Toast ============ */
+let toastTimer = null;
+function showToast(msg, type) {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toastEl.className = 'toast' + (type ? ' ' + type : '');
+  }, 3500);
+}
+
+/* ============ ساخت لیست جنسیت ============ */
+GENDER_LIST.forEach(label => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'gender-option';
+  btn.dataset.value = label;
+  btn.innerHTML = '<span class="option-label">' + label + '</span><span class="option-check"></span>';
+  btn.addEventListener('click', () => {
+    tempGender = label;
+    genderOptionsEl.querySelectorAll('.gender-option')
+      .forEach(o => o.classList.remove('selected'));
+    btn.classList.add('selected');
+    genderConfirm.disabled = false;
+    btn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+  genderOptionsEl.appendChild(btn);
+});
+
+/* ============ Gender Modal ============ */
+function openGenderModal() {
+  tempGender = selectedGender;
+  const allOptions = genderOptionsEl.querySelectorAll('.gender-option');
+  let selectedEl = null;
+  allOptions.forEach(opt => {
+    const isSelected = opt.dataset.value === tempGender;
+    opt.classList.toggle('selected', isSelected);
+    if (isSelected) selectedEl = opt;
+  });
+  genderConfirm.disabled = !tempGender;
+  genderModal.classList.add('show');
+  genderField.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  if (selectedEl) {
+    setTimeout(() => {
+      selectedEl.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }, 100);
+  }
+}
+
+function closeGenderModal(confirm) {
+  if (confirm && tempGender) {
+    selectedGender = tempGender;
+    genderValueEl.textContent = selectedGender;
+    genderValueEl.classList.add('filled');
+    genderField.classList.remove('error');
+  }
+  genderModal.classList.remove('show');
+  genderField.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+genderTrigger.addEventListener('click', openGenderModal);
+genderTrigger.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    openGenderModal();
+  }
+});
+genderConfirm.addEventListener('click', () => closeGenderModal(true));
+genderCancel.addEventListener('click', () => closeGenderModal(false));
+genderModal.addEventListener('click', (e) => {
+  if (e.target === genderModal) closeGenderModal(false);
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && genderModal.classList.contains('show')) {
+    closeGenderModal(false);
+  }
+});
+
+/* ============ Validation ============ */
+function setError(fieldName, hasError) {
+  const field = document.querySelector('.gfield[data-field="' + fieldName + '"]');
+  if (field) field.classList.toggle('error', hasError);
+}
+
+function validateForm() {
+  let valid = true;
+  const fullname = document.getElementById('fullname').value.trim();
+  const telegram = document.getElementById('telegram').value.trim();
+  const mivovi   = document.getElementById('mivovi').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
+
+  setError('fullname', false);
+  setError('telegram', false);
+  setError('mivovi', false);
+  setError('phone', false);
+  setError('gender', false);
+
+  if (fullname.length < 3) { setError('fullname', true); valid = false; }
+  if (telegram.length < 3) { setError('telegram', true); valid = false; }
+  if (mivovi.length < 3)   { setError('mivovi', true);   valid = false; }
+  if (phone && !/^[0-9+\-\s]{7,}$/.test(phone)) {
+    setError('phone', true); valid = false;
+  }
+  if (!selectedGender) { setError('gender', true); valid = false; }
+
+  return valid;
+}
+
+document.querySelectorAll('.gfield input').forEach(input => {
+  input.addEventListener('input', () => {
+    input.closest('.gfield').classList.remove('error');
+  });
+});
+
+/* ============ بازگشت از صفحه تکراری ============ */
+retryBtn.addEventListener('click', () => {
+  duplicateScreen.classList.remove('show');
+  form.style.display = 'block';
+  document.getElementById('telegram').value = '';
+  document.getElementById('telegram').focus();
+});
+
+/* ============ Submit ============ */
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) {
+    showToast('لطفاً فیلدهای الزامی را کامل کنید', 'error');
+    const firstErr = document.querySelector('.gfield.error');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const telegramRaw = document.getElementById('telegram').value.trim();
+  const normalizedTg = normalizeTgId(telegramRaw);
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  try {
+    /* ۱. چک تکراری بودن آیدی */
+    const { data: existing, error: checkError } = await supabaseClient
+      .from('registrations')
+      .select('id, telegram')
+      .ilike('telegram', normalizedTg)
+      .limit(1);
+
+    if (checkError) throw checkError;
+
+    if (existing && existing.length > 0) {
+      /* آیدی تکراریه */
+      dupTgId.textContent = '@' + normalizedTg;
+      form.style.display = 'none';
+      successScreen.classList.remove('show');
+      duplicateScreen.classList.add('show');
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      return;
+    }
+
+    /* ۲. ذخیره در Supabase */
+    const payload = {
+      fullname: document.getElementById('fullname').value.trim(),
+      telegram: normalizedTg,
+      mivovi:   document.getElementById('mivovi').value.trim(),
+      phone:    document.getElementById('phone').value.trim() || null,
+      gender:   selectedGender
+    };
+
+    const { error: insertError } = await supabaseClient
+      .from('registrations')
+      .insert([payload]);
+
+    if (insertError) throw insertError;
+
+    /* ۳. نمایش موفقیت */
+    form.style.display = 'none';
+    duplicateScreen.classList.remove('show');
+    successScreen.classList.add('show');
+    showToast('ثبت‌نام با موفقیت انجام شد', 'success');
+
+  } catch (err) {
+    console.error('Supabase error:', err);
+    showToast('خطا در اتصال به سرور. لطفاً دوباره تلاش کنید', 'error');
+  } finally {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+  }
+});
+</script>
+</body>
+  </html>
